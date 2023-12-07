@@ -21,4 +21,19 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           REMOTE_HOST: ec2-13-127-183-253.ap-south-1.compute.amazonaws.com
           REMOTE_USER: ubuntu
-          TARGET: /home/ubuntu/test
+          TARGET: /home/ubuntu/news-app
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+
+              # Now we have got the access of EC2 and we will start the deploy .
+              cd /home/ubuntu/news-app &&
+              git checkout main &&
+              git fetch --all &&
+              git reset --hard origin/main &&
+              git pull origin main &&
+              sudo  npm init &&
+              sudo npm install express ejs body-parser axios math moment &&
+              sudo npm install -D nodemon &&
+              sudo npm dev
+              
