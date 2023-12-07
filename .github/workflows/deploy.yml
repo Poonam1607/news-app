@@ -1,6 +1,5 @@
 name: Push-to-EC2
 
-# Trigger deployment only on push to master branch
 on:
   push:
     branches:
@@ -22,18 +21,21 @@ jobs:
           REMOTE_HOST: ec2-13-127-183-253.ap-south-1.compute.amazonaws.com
           REMOTE_USER: ubuntu
           TARGET: /home/ubuntu/news-app
-        run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
 
-              # Now we have got the access of EC2 and we will start the deploy .
+      - name: SSH into Server and Deploy
+        env:
+          USER_NAME: ubuntu
+          HOSTNAME: ec2-13-127-183-253.ap-south-1.compute.amazonaws.com
+        run: |
+          echo "$SSH_PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
               cd /home/ubuntu/news-app &&
               git checkout main &&
               git fetch --all &&
               git reset --hard origin/main &&
               git pull origin main &&
-              sudo  npm init &&
-              sudo npm install express ejs body-parser axios math moment &&
-              sudo npm install -D nodemon &&
-              sudo npm dev
-              
+              npm init &&
+              npm install express ejs body-parser axios math moment &&
+              npm install -D nodemon &&
+              npm run dev
+          '
