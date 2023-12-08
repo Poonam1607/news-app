@@ -1,21 +1,26 @@
 name: Deploying
-
 on:
   push:
-    branches:
-      - main
-
+    branches: [ main ]
+ 
 jobs:
-  deploy:
-    name: Deploy
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@master
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          REMOTE_HOST: ec2-13-127-183-253.ap-south-1.compute.amazonaws.com
-          REMOTE_USER: ubuntu
-          TARGET: /home/ubuntu/news-app
-          script: sh deploy.sh
+    - uses: actions/checkout@v2
+    - name: Use Node.js 14.x to Build
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14.x
+    - run: npm install
+    - run: CI=false npm run build
+    - name: ssh deploy on aws ec2
+      uses: easingthemes/ssh-deploy@v2.1.4
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
+        REMOTE_HOST: ec2-13-127-183-253.ap-south-1.compute.amazonaws.com
+        REMOTE_USER: ubuntu
+        REMOTE_PORT: 3000
+        SOURCE: "build/"
+        TARGET: /home/ubuntu/news-app
+        script: sh deploy.sh
