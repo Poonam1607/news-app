@@ -22,4 +22,4 @@ jobs:
         REMOTE_PORT: 3000
         SOURCE: "build/"
         TARGET: /home/ubuntu/news-app
-        script: sh deploy.sh
+        #script: sh deploy.sh
