@@ -1,32 +1,21 @@
-name: Deploy
+name: Deploying
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  Deploy:
-    name: Deploy to EC2
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
-    
+
     steps:
-      - uses: actions/checkout@v2 
-      - name: Build & Deploy
-        env:
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           REMOTE_HOST: ec2-13-127-183-253.ap-south-1.compute.amazonaws.com
           REMOTE_USER: ubuntu
           TARGET: /home/ubuntu/news-app
-        run: |
-          echo "$SSH_PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${REMOTE_USER}@${REMOTE_HOST} '
-              cd /home/ubuntu/news-app &&
-              git checkout main &&
-              git fetch --all &&
-              git reset --hard origin/main &&
-              git pull origin main &&
-              npm init &&
-              npm install express ejs body-parser axios math moment &&
-              npm install -D nodemon &&
-              npm run dev
-          '
+          script: sh deploy.sh
