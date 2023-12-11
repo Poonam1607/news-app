@@ -47,7 +47,7 @@ jobs:
              npm install express ejs body-parser axios math moment &&
              npm install -D
              echo "Build your app"
-             npm run dev
+    #npm run dev
            host: ec2-3-111-29-72.ap-south-1.compute.amazonaws.com
            username: ubuntu
            key: ${{ secrets.SSH_PRIVATE_KEY }}
