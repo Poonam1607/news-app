@@ -36,7 +36,18 @@ jobs:
             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws-region: ap-south-1
       with:
-           script: sh deploy.sh
+           script: |
+             echo "Jump to app folder"
+             cd /home/ubuntu/news-app
+             echo "Update app from Git"
+             git pull
+             echo "Initialize npm"
+             npm init
+             echo "Install app dependencies"
+             npm install express ejs body-parser axios math moment &&
+             npm install -D
+             echo "Build your app"
+             npm run dev
            host: ec2-3-111-29-72.ap-south-1.compute.amazonaws.com
            username: ubuntu
            key: ${{ secrets.SSH_PRIVATE_KEY }}
