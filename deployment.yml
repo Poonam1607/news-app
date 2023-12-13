@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: news-app-deployment
-          image: 564940745552.dkr.ecr.ap-south-1.amazonaws.com/pipeline:latest
+          image: DOCKER_IMAGE
           resources:
             requests:
               cpu: "100m"
