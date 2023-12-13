@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: news-app-deployment
+  labels:
+    app: news-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: news-app
+  template:
+    metadata:
+      labels:
+        app: news-app
+    spec:
+      containers:
+        - name: news-app-deployment
+          image: 564940745552.dkr.ecr.ap-south-1.amazonaws.com/pipeline:latest
+          resources:
+            requests:
+              cpu: "100m"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
