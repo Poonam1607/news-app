@@ -1,55 +1,23 @@
-name: Node CI
+name: Deploy Node.js app
 
-on: [push]
+on:
+  push:
+    branches: [main]  # Run workflow on pushes to the main branch
 
 jobs:
-  build:
-
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Install Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16.x'
-    - name: Install npm dependencies
-      run: npm install
-    - name: Run build task
-      run: npm run build --if-present
-    #- name: Deploy to Server
-     # uses: easingthemes/ssh-deploy@main
-      #with:
-       #   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          #ARGS: "-rlgoDzvc -i --delete"
-          #SOURCE: "dist/"
-        #  REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-         # REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          #REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
-          #TARGET: ${{ secrets.TARGET }}
-          #EXCLUDE: "/dist/, /node_modules/"
-        #script: sh deploy.sh
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@master
-      env:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: ap-south-1
-      with:
-           script: |
-             echo "Jump to app folder"
-             cd /home/ubuntu/news-app
-             echo "Update app from Git"
-             git pull
-             echo "Initialize npm"
-             npm init
-             echo "Install app dependencies"
-             npm install express ejs body-parser axios math moment &&
-             npm install -D
-             echo "Build your app"
-    #npm run dev
-           host: ec2-3-111-29-72.ap-south-1.compute.amazonaws.com
-           username: ubuntu
-           key: ${{ secrets.SSH_PRIVATE_KEY }}
-           port: 22
-           envs: AWS_ACCESS_KEY,AWS_SECRET_ACCESS_KEY h
+      - uses: actions/checkout@v3  # Checkout the repository code
+      - uses: appleboy/ssh-action@master  # SSH into the server
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/news-app
+            git pull
+            npm init
+            npm install express ejs body-parser axios math moment && npm install -D
+            npm run dev
